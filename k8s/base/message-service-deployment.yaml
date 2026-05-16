@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: message-service
-  namespace: messager
+  namespace: messager-dev
 spec:
   replicas: 1
   selector:
@@ -39,6 +39,5 @@ spec:
               mountPath: /app/uploads
       volumes:
         - name: uploads
-          hostPath:
-            path: /tmp/messager-uploads
-            type: DirectoryOrCreate
+          persistentVolumeClaim:
+            claimName: message-uploads-pvc
