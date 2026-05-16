@@ -1,0 +1,7 @@
+**/secret.yaml
+!**/secret.example.yaml
+
+.idea/
+
+.DS_Store
+Thumbs.db
