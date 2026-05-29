@@ -6,9 +6,12 @@ namespace: messager
 resources:
   - namespace.yaml
   - configmap.yaml
+  - postgres-init-cm.yaml
   - postgres-pvc.yaml
   - postgres-deployment.yaml
   - postgres-service.yaml
+  - users-migrations-cm.yaml
+  - messages-migrations-cm.yaml
   - migrate-users-job.yaml
   - migrate-messages-job.yaml
   - user-service-deployment.yaml
@@ -22,5 +25,5 @@ resources:
   - minio-deployment.yaml
   - minio-service.yaml
   - s3-secret.yaml
-  - s3-pv.yaml
-  - s3-pvc.yaml
+  - s3-pv-v4.yaml
+  - s3-pvc-v4.yaml

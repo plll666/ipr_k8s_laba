@@ -13,6 +13,23 @@ spec:
       labels:
         app: message-service
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: workload
+                operator: In
+                values:
+                - app
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+              - key: disk
+                operator: In
+                values:
+                - fast
       containers:
         - name: message-service
           image: mablinov2704/message-service:latest
@@ -37,6 +54,16 @@ spec:
           volumeMounts:
             - name: uploads
               mountPath: /app/uploads
+          readinessProbe:
+            tcpSocket:
+              port: 8082
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 8082
+            initialDelaySeconds: 15
+            periodSeconds: 20
       volumes:
         - name: uploads
           persistentVolumeClaim:

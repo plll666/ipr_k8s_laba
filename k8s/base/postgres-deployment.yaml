@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgres
-  namespace: messager-dev
+  namespace: messager
 spec:
   replicas: 1
   selector:
@@ -13,6 +13,16 @@ spec:
       labels:
         app: postgres
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: workload
+                operator: In
+                values:
+                - system
+                - app
       containers:
         - name: postgres
           image: postgres:16-alpine
@@ -20,15 +30,39 @@ spec:
             - containerPort: 5432
           env:
             - name: POSTGRES_USER
-              value: "postgres"
+              valueFrom:
+                secretKeyRef:
+                  name: messager-db-secret
+                  key: POSTGRES_USER
             - name: POSTGRES_PASSWORD
-              value: "postgres123"
+              valueFrom:
+                secretKeyRef:
+                  name: messager-db-secret
+                  key: POSTGRES_PASSWORD
             - name: POSTGRES_DB
-              value: "messager"
+              valueFrom:
+                configMapKeyRef:
+                  name: messager-config
+                  key: POSTGRES_DB
           volumeMounts:
             - name: postgres-data
               mountPath: /var/lib/postgresql/data
+            - name: init-scripts
+              mountPath: /docker-entrypoint-initdb.d
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "postgres"]
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            exec:
+              command: ["pg_isready", "-U", "postgres"]
+            initialDelaySeconds: 30
+            periodSeconds: 15
       volumes:
         - name: postgres-data
           persistentVolumeClaim:
             claimName: postgres-pvc
+        - name: init-scripts
+          configMap:
+            name: postgres-init

@@ -13,14 +13,31 @@ spec:
       labels:
         app: minio
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: workload
+                operator: In
+                values:
+                - system
+                - app
       containers:
       - name: minio
         image: minio/minio:latest
         args: ["server", "/data", "--console-address", ":9001"]
         ports:
         - containerPort: 9000
+        - containerPort: 9001
         env:
         - name: MINIO_ROOT_USER
-          value: "minioadmin"
+          valueFrom:
+            secretKeyRef:
+              name: csi-s3-secret
+              key: accessKeyID
         - name: MINIO_ROOT_PASSWORD
-          value: "minioadmin123"
+          valueFrom:
+            secretKeyRef:
+              name: csi-s3-secret
+              key: secretAccessKey

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: s3-pv-uploads-v3
+  name: s3-pv-uploads-v4
 spec:
   capacity:
     storage: 10Gi
@@ -15,10 +15,10 @@ spec:
     - use_path_request_style
   csi:
     driver: ru.yandex.s3.csi
-    volumeHandle: messager-uploads-bucket
+    volumeHandle: messager-uploads-bucket-v4
     nodePublishSecretRef:
       name: csi-s3-secret
       namespace: messager-dev
     volumeAttributes:
-      bucketName: messager-uploads
+      bucketName: messager-uploads-v4
       mounter: rclone

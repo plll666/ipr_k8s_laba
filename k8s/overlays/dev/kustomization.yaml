@@ -7,7 +7,9 @@ resources:
 - ../../base
 
 patches:
-- path: patches/replicas.yaml
+- path: patches/s3-pv-patch.yaml
+- path: patches/remove-affinity.yaml
+- path: patches/resources.yaml
 
 images:
 - name: mablinov2704/user-service
